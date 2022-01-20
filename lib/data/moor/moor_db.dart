@@ -127,5 +127,18 @@ Insertable<MoorRecipeData> recipeToInsertableMoorRecipe(Recipe recipe) {
       totalTime: recipe.totalTime ?? 0);
 }
 
+Ingredient moorIngredientToIngredient(MoorIngredientData ingredient) {
+  return Ingredient(
+      id: ingredient.id,
+      recipeId: ingredient.recipeId,
+      name: ingredient.name,
+      weight: ingredient.weight);
+}
 
-// TODO: Add moorIngredientToIngredient and MoorIngredientCompanion here
+MoorIngredientCompanion ingredientToInsertableMoorIngredient(
+    Ingredient ingredient) {
+  return MoorIngredientCompanion.insert(
+      recipeId: ingredient.recipeId ?? 0,
+      name: ingredient.name ?? '',
+      weight: ingredient.weight ?? 0);
+}
