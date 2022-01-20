@@ -46,10 +46,64 @@ class RecipeDatabase extends _$RecipeDatabase {
   int get schemaVersion => 1;
 }
 
+// @UseDao specifies the following class is a DAO class for the MoorRecipe table.
+@UseDao(tables: [MoorRecipe])
+// Create the DAO class that extends the Moor DatabaseAccessor with the mixin, _$RecipeDaoMixin.
+class RecipeDao extends DatabaseAccessor<RecipeDatabase> with _$RecipeDaoMixin {
+  // Create a field to hold an instance of your database.
+  final RecipeDatabase db;
 
-// TODO: Add RecipeDao here
+  RecipeDao(this.db) : super(db);
 
-// TODO: Add IngredientDao
+  // Use a simple select query to find all recipes.
+  Future<List<MoorRecipeData>> findAllRecipes() => select(moorRecipe).get();
+
+  // Define watchAllRecipes(), but skip the implementation for now.
+  Stream<List<Recipe>> watchAllRecipes() {
+    // TODO: Add watchAllRecipes code here
+  }
+
+  // Define a more complex query that uses where to fetch recipes by ID.
+  Future<List<MoorRecipeData>> findRecipeById(int id) =>
+      (select(moorRecipe)..where((tbl) => tbl.id.equals(id))).get();
+
+  // Use into() and insert() to add a new recipe.
+  Future<int> insertRecipe(Insertable<MoorRecipeData> recipe) =>
+      into(moorRecipe).insert(recipe);
+
+  // Use delete() and where() to delete a specific recipe.
+  Future deleteRecipe(int id) => Future.value(
+      (delete(moorRecipe)..where((tbl) => tbl.id.equals(id))).go());
+}
+
+// Similar to RecipeDao, you define the table to use.
+@UseDao(tables: [MoorIngredient])
+// Extend DatabaseAccessor with _$IngredientDaoMixin.
+class IngredientDao extends DatabaseAccessor<RecipeDatabase>
+    with _$IngredientDaoMixin {
+  final RecipeDatabase db;
+
+  IngredientDao(this.db) : super(db);
+
+  Future<List<MoorIngredientData>> findAllIngredients() =>
+      select(moorIngredient).get();
+
+  // Call watch() to create a stream.
+  Stream<List<MoorIngredientData>> watchAllIngredients() =>
+      select(moorIngredient).watch();
+
+  // Use where() to select all ingredients that match the recipe ID.
+  Future<List<MoorIngredientData>> findRecipeIngredients(int id) =>
+      (select(moorIngredient)..where((tbl) => tbl.recipeId.equals(id))).get();
+
+  // Use into() and insert() to add a new ingredient.
+  Future<int> insertIngredient(Insertable<MoorIngredientData> ingredient) =>
+      into(moorIngredient).insert(ingredient);
+
+  // Use delete() plus where() to delete a specific ingredient.
+  Future deleteIngredient(int id) => Future.value(
+      (delete(moorIngredient)..where((tbl) => tbl.id.equals(id))).go());
+}
 
 // TODO: Add moorRecipeToRecipe here
 
