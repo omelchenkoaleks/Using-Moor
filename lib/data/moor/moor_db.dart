@@ -105,8 +105,27 @@ class IngredientDao extends DatabaseAccessor<RecipeDatabase>
       (delete(moorIngredient)..where((tbl) => tbl.id.equals(id))).go());
 }
 
-// TODO: Add moorRecipeToRecipe here
+// Conversion Methods
+Recipe moorRecipeToRecipe(MoorRecipeData recipe) {
+  return Recipe(
+      id: recipe.id,
+      label: recipe.label,
+      image: recipe.image,
+      url: recipe.url,
+      calories: recipe.calories,
+      totalWeight: recipe.totalWeight,
+      totalTime: recipe.totalTime);
+}
 
-// TODO: Add MoorRecipeData here
+Insertable<MoorRecipeData> recipeToInsertableMoorRecipe(Recipe recipe) {
+  return MoorRecipeCompanion.insert(
+      label: recipe.label ?? '',
+      image: recipe.image ?? '',
+      url: recipe.url ?? '',
+      calories: recipe.calories ?? 0,
+      totalWeight: recipe.totalWeight ?? 0,
+      totalTime: recipe.totalTime ?? 0);
+}
+
 
 // TODO: Add moorIngredientToIngredient and MoorIngredientCompanion here
