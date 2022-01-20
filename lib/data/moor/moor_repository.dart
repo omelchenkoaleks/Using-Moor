@@ -110,8 +110,55 @@ class MoorRepository extends Repository {
     );
   }
 
-  // TODO: Add insertRecipe()
-  // TODO: Add insertIngredients()
+  // ----- Inserting recipes -----
+
+  @override
+  Future<int> insertRecipe(Recipe recipe) {
+    return Future(
+      () async {
+        // Use the recipe DAO to insert a converted model recipe.
+        final id =
+            await _recipeDao.insertRecipe(recipeToInsertableMoorRecipe(recipe));
+        if (recipe.ingredients != null) {
+          // Set the recipe ID for each ingredient.
+          recipe.ingredients!.forEach(
+            (ingredient) {
+              ingredient.recipeId = id;
+            },
+          );
+          // Insert all the ingredients. You’ll define these next.
+          insertIngredients(recipe.ingredients!);
+        }
+        return id;
+      },
+    );
+  }
+
+  @override
+  Future<List<int>> insertIngredients(List<Ingredient> ingredients) {
+    return Future(
+      () {
+        // Checks to make sure you have at least one ingredient.
+        if (ingredients.length == 0) {
+          return <int>[];
+        }
+        final resultIds = <int>[];
+        ingredients.forEach(
+          (ingredient) {
+            // Converts the ingredient.
+            final moorIngredient =
+                ingredientToInsertableMoorIngredient(ingredient);
+            // Inserts the ingredient into the database and adds a new ID to the list.
+            _ingredientDao
+                .insertIngredient(moorIngredient)
+                .then((int id) => resultIds.add(id));
+          },
+        );
+        return resultIds;
+      },
+    );
+  }
+
   // TODO: Add Delete methods
 
   @override
