@@ -71,9 +71,45 @@ class MoorRepository extends Repository {
     return ingredientStream!;
   }
 
-  // TODO: Add findRecipeById()
-  // TODO: Add findAllIngredients()
-  // TODO: Add findRecipeIngredients()
+  // ----- Finding recipes -----
+
+  @override
+  Future<Recipe> findRecipeById(int id) {
+    return _recipeDao
+        .findRecipeById(id)
+        .then((listOfRecipes) => moorRecipeToRecipe(listOfRecipes.first));
+  }
+
+  @override
+  Future<List<Ingredient>> findAllIngredients() {
+    return _ingredientDao.findAllIngredients().then<List<Ingredient>>(
+      (List<MoorIngredientData> moorIngredients) {
+        final ingredients = <Ingredient>[];
+        moorIngredients.forEach(
+          (ingredient) {
+            ingredients.add(moorIngredientToIngredient(ingredient));
+          },
+        );
+        return ingredients;
+      },
+    );
+  }
+
+  @override
+  Future<List<Ingredient>> findRecipeIngredients(int recipeId) {
+    return _ingredientDao.findRecipeIngredients(recipeId).then(
+      (listOfIngredients) {
+        final ingredients = <Ingredient>[];
+        listOfIngredients.forEach(
+          (ingredient) {
+            ingredients.add(moorIngredientToIngredient(ingredient));
+          },
+        );
+        return ingredients;
+      },
+    );
+  }
+
   // TODO: Add insertRecipe()
   // TODO: Add insertIngredients()
   // TODO: Add Delete methods
