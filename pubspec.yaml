@@ -22,9 +22,6 @@ dependencies:
   logging: ^1.0.1
   provider: ^6.0.0
   equatable: ^2.0.3
-  sqflite: ^2.0.2
-  path_provider: ^2.0.2
-  synchronized: ^3.0.0
   sqlbrite: ^2.2.0
   moor_flutter: ^4.0.0
 
