@@ -159,7 +159,42 @@ class MoorRepository extends Repository {
     );
   }
 
-  // TODO: Add Delete methods
+  // ----- Deleting -----
+
+  @override
+  Future<void> deleteRecipe(Recipe recipe) {
+    if (recipe.id != null) {
+      _recipeDao.deleteRecipe(recipe.id!);
+    }
+    return Future.value();
+  }
+
+  @override
+  Future<void> deleteIngredient(Ingredient ingredient) {
+    if (ingredient.id != null) {
+      return _ingredientDao.deleteIngredient(ingredient.id!);
+    } else {
+      return Future.value();
+    }
+  }
+
+  @override
+  Future<void> deleteIngredients(List<Ingredient> ingredients) {
+    ingredients.forEach((ingredient) {
+      if (ingredient.id != null) {
+        _ingredientDao.deleteIngredient(ingredient.id!);
+      }
+    });
+    return Future.value();
+  }
+
+  @override
+  Future<void> deleteRecipeIngredients(int recipeId) async {
+    // Find all ingredients for the given recipe ID.
+    final ingredients = await findRecipeIngredients(recipeId);
+    // Delete the list of ingredients.
+    return deleteIngredients(ingredients);
+  }
 
   @override
   Future init() async {
