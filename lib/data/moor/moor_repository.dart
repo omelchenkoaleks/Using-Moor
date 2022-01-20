@@ -16,9 +16,61 @@ class MoorRepository extends Repository {
   // Creates a stream that watches recipes.
   Stream<List<Recipe>>? recipeStream;
 
-  // TODO: Add findAllRecipes()
-  // TODO: Add watchAllRecipes()
-  // TODO: Add watchAllIngredients()
+  @override
+  Future<List<Recipe>> findAllRecipes() {
+    // Uses RecipeDao to find all recipes.
+    return _recipeDao.findAllRecipes()
+        // Takes the list of MoorRecipeData items, executing then after findAllRecipes() finishes.
+        .then<List<Recipe>>(
+      (List<MoorRecipeData> moorRecipes) {
+        final recipes = <Recipe>[];
+        // For each recipe:
+        moorRecipes.forEach(
+          (moorRecipe) async {
+            // Converts the Moor recipe to a model recipe.
+            final recipe = moorRecipeToRecipe(moorRecipe);
+            // Calls the method to get all recipe ingredients, which you’ll define later.
+            if (recipe.id != null) {
+              recipe.ingredients = await findRecipeIngredients(recipe.id!);
+            }
+            recipes.add(recipe);
+          },
+        );
+        return recipes;
+      },
+    );
+  }
+
+  @override
+  Stream<List<Recipe>> watchAllRecipes() {
+    if (recipeStream == null) {
+      recipeStream = _recipeDao.watchAllRecipes();
+    }
+    return recipeStream!;
+  }
+
+  @override
+  Stream<List<Ingredient>> watchAllIngredients() {
+    if (ingredientStream == null) {
+      // Gets a stream of ingredients.
+      final stream = _ingredientDao.watchAllIngredients();
+      // Maps each stream list to a stream of model ingredients
+      ingredientStream = stream.map(
+        (moorIngredients) {
+          final ingredients = <Ingredient>[];
+          // Converts each ingredient in the list to a model ingredient.
+          moorIngredients.forEach(
+            (moorIngredient) {
+              ingredients.add(moorIngredientToIngredient(moorIngredient));
+            },
+          );
+          return ingredients;
+        },
+      );
+    }
+    return ingredientStream!;
+  }
+
   // TODO: Add findRecipeById()
   // TODO: Add findAllIngredients()
   // TODO: Add findRecipeIngredients()
