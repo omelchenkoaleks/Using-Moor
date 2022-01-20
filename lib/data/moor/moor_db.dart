@@ -60,7 +60,29 @@ class RecipeDao extends DatabaseAccessor<RecipeDatabase> with _$RecipeDaoMixin {
 
   // Define watchAllRecipes(), but skip the implementation for now.
   Stream<List<Recipe>> watchAllRecipes() {
-    // TODO: Add watchAllRecipes code here
+    // Use select to start a query.
+    return select(moorRecipe)
+        // Create a stream.
+        .watch()
+        // Map each list of rows.
+        .map(
+      (rows) {
+        final recipes = <Recipe>[];
+        // For each row, execute the code below.
+        rows.forEach(
+          (row) {
+            // Convert the recipe row to a regular recipe.
+            final recipe = moorRecipeToRecipe(row);
+            // If your list doesn’t already contain the recipe, create an empty ingredient list and add it to your recipes list.
+            if (!recipes.contains(recipe)) {
+              recipe.ingredients = <Ingredient>[];
+              recipes.add(recipe);
+            }
+          },
+        );
+        return recipes;
+      },
+    );
   }
 
   // Define a more complex query that uses where to fetch recipes by ID.
