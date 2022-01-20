@@ -32,8 +32,20 @@ class MoorIngredient extends Table {
   RealColumn get weight => real()();
 }
 
+// Describe the tables and DAOs this database will use.
+@UseMoor(tables: [MoorRecipe, MoorIngredient], daos: [RecipeDao, IngredientDao])
+// Extend _$RecipeDatabase, which the Moor generator will create. This doesn’t exist yet, but the part command at the top will include it.
+class RecipeDatabase extends _$RecipeDatabase {
+  RecipeDatabase()
+      // When creating the class, call the super class’s constructor. This uses the built-in Moor query executor and passes the pathname of the file. It also sets logging to true.
+      : super(FlutterQueryExecutor.inDatabaseFolder(
+            path: 'recipes.sqlite', logStatements: true));
 
-// TODO: Add @UseMoor() and RecipeDatabase() here
+  // Set the database or schema version to 1.
+  @override
+  int get schemaVersion => 1;
+}
+
 
 // TODO: Add RecipeDao here
 
